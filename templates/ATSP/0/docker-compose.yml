@@ -172,7 +172,7 @@ Sentinel:
   ports:
     - "26379:26379"
   link: Redis 
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sentinel
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sentinel:3
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=redis
