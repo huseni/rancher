@@ -155,7 +155,43 @@ NotesDB:
 RabbitMQ:
   ports:
     - "15672:15672"
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/mqtt:latest
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq:latest
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=rabbit
+
+Redis:
+  ports:
+    - "6379:6379"
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/redis:3
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=redis
+    
+Sentinel:
+  ports:
+    - "26379:26379"
+  link: Redis 
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sentinel
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=redis
+
+Kafka:
+  ports:
+    - "9092:9092"
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/kafka:0.10.0.0-2
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+    Kafka-9092, Zookeeper-2181
+
+Zookeeper:
+  ports:
+    - "2181:2181"
+  link: Kafka
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/zk:3.4.8-4
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+    
