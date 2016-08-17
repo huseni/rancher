@@ -1,0 +1,161 @@
+EM:
+  ports:
+  - 7463:1070/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 6,7
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/em-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_HOST_IP: 10.6.51.224
+    REDIS_PORT: 6379
+    SENTINEL_IP: 10.6.51.224
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+  command:
+  - /root/em_start.sh
+
+A2:
+  ports:
+  - 4050:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 2,3
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/a2-new:latest
+  mem_limit: 8589934592
+
+C2:
+  ports:
+  - 7060:1060/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 8,9
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/c2-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_HOST_IP: 10.6.51.224
+    REDIS_PORT: 6379
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+  command:
+  - /root/c2_start.sh
+
+NM:
+  ports:
+  - 5081:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 14,15
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nm-new:latest
+  mem_limit: 8589934592
+  environment:
+    mts.baseurl: http://10.6.51.230:8082/mts-api/oem/v1
+    mts.userdetails: /userDetails
+    mts.host: 10.6.51.230
+    mts.username: test
+    mts.password: test
+    mail.host: email-smtp.us-west-2.amazonaws.com
+    mail.port: 25
+    mail.username: AKIAJCTMSMITAE6GL6MQ
+    mail.password: AsRbwvmHi9axd5TMWsl3OozFVGDxTaYdBPaIpeLw/NQ4
+    mail.from: pankaj.bharambe@aeris.net
+    mail.displayName: Aeris Communication
+
+SML:
+  ports:
+  - 1790:1090/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 10,11
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sml-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_HOST_IP: 10.6.51.224
+    REDIS_PORT: 6379
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+  command:
+  - /root/sml_start.sh
+
+SMH:
+  ports:
+  - 1510:1010/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 12,13
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/smh-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_HOST_IP: 10.6.51.224
+    REDIS_PORT: 6379
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+  command:
+  - ./root/smh_start.sh
+
+API-GW:
+  ports:
+  - 1080:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 4,5
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/api-gw-new:latest
+  mem_limit: 8589934592
+
+MTS:
+  ports:
+  - 8082:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 6,7,8
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mts-new
+  mem_limit: 8589934592
+
+CAT:
+  ports:
+  - 8083:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 3,4,5
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/cat-new
+  mem_limit: 8589934592
+
+MDB:
+  ports:
+  - 8084:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 9,10,11
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mdb
+  mem_limit: 8589934592
+
+NotesDB:
+  ports:
+  - 8050:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 12,13,14
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/notesdb
+  mem_limit: 8589934592
+  command:
+  - /root/apache-tomcat-8.0.33/bin/startup.sh
+
+  
+RabbitMQ:
+  ports:
+    - "15672:15672"
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/mqtt:latest
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=rabbit

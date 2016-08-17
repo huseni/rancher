@@ -1,0 +1,40 @@
+.catalog:
+  name: "ATSP"
+  version: "demo-atsp-1"
+  description: "ATSP. You know, for search"
+  questions:
+    - variable: cluster_name
+      description: "Unique name to assign to your ATSP cluster."
+      label: "Cluster Name"
+      type: "string"
+      required: true
+      default: "atsp"
+NM:
+  scale: 1
+SML:
+  scale: 1
+SMH:
+  scale: 1
+EM:
+  scale: 1
+C2:
+  scale: 1
+A2:
+  scale: 1
+API-GW:
+  scale: 1
+MTS:
+  scale: 1
+MDB:
+  scale: 1
+NotesDB:
+  scale: 1
+CAT:
+  scale: 1
+RabbitMQ-MQTT:
+  scale: 1
+Kafka-Zookeeper:
+  scale: 1
+Redis:
+  scale: 1
+  
