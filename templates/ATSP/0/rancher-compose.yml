@@ -33,8 +33,12 @@ CAT:
   scale: 1
 RabbitMQ-MQTT:
   scale: 1
-Kafka-Zookeeper:
+Kafka:
+  scale: 1
+Zookeeper:
   scale: 1
 Redis:
+  scale: 1
+Sentinel:
   scale: 1
   
