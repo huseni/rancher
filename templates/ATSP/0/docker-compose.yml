@@ -1,6 +1,6 @@
 EM:
   ports:
-  - 7463:1070/tcp
+  - 1070:1070/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -18,7 +18,7 @@ EM:
 
 A2:
   ports:
-  - 4050:8080/tcp
+  - 1050:8080/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -28,7 +28,7 @@ A2:
 
 C2:
   ports:
-  - 7060:1060/tcp
+  - 1060:1060/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -45,7 +45,7 @@ C2:
 
 NM:
   ports:
-  - 5081:8080/tcp
+  - 8081:8080/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -67,7 +67,7 @@ NM:
 
 SML:
   ports:
-  - 1790:1090/tcp
+  - 1090:1090/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -84,7 +84,7 @@ SML:
 
 SMH:
   ports:
-  - 1510:1010/tcp
+  - 1010:1010/tcp
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
@@ -97,7 +97,7 @@ SMH:
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
   command:
-  - ./root/smh_start.sh
+    - /root/smh_start.sh
 
 API-GW:
   ports:
@@ -148,8 +148,6 @@ NotesDB:
   cpuset: 12,13,14
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/notesdb
   mem_limit: 8589934592
-  command:
-  - /root/apache-tomcat-8.0.33/bin/startup.sh
 
 kafka:
   tty: true
@@ -219,7 +217,19 @@ Sentinel:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=redis
 
-  
-
+nginx-tcp1:
+  ports:
+  - 1012:1012/tcp
+  - 1013:1013/tcp
+  - 1014:1014/tcp
+  - 1015:1015/tcp
+  - 1883:1883/tcp
+  - 80:80/tcp
+  - 8083:8083/tcp
+  - 8989:8989/tcp
+  - 9443:9443/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: services=nginx
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nginx:qa-pge-1
 
     
