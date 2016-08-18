@@ -8,9 +8,9 @@ EM:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/em-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.224
+    REDIS_HOST_IP: 10.6.51.144
     REDIS_PORT: 6379
-    SENTINEL_IP: 10.6.51.224
+    SENTINEL_IP: 10.6.51.144
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
   command:
@@ -36,7 +36,7 @@ C2:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/c2-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.224
+    REDIS_HOST_IP: 10.6.51.144
     REDIS_PORT: 6379
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
@@ -75,7 +75,7 @@ SML:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sml-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.224
+    REDIS_HOST_IP: 10.6.51.144
     REDIS_PORT: 6379
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
@@ -92,7 +92,7 @@ SMH:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/smh-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.224
+    REDIS_HOST_IP: 10.6.51.144
     REDIS_PORT: 6379
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
@@ -151,14 +151,55 @@ NotesDB:
   command:
   - /root/apache-tomcat-8.0.33/bin/startup.sh
 
-  
-RabbitMQ:
+kafka:
+  tty: true
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/kafka:0.10.0.0-2
   ports:
-    - "15672:15672"
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq:latest
+  - "9092:9092"
+  volumes:
+  - /opt/kafka/data:/opt/kafka/data
   labels:
     io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+  environment:
+    - ZK_SERVICE=zk
+    - KAFKA_LOG_DIRS=/var/logs/kafkalogs
+    - ADVERTISE_PUB_IP=10.6.51.40  
+  links:
+  - zk:zk
+
+zk:
+  tty: true
+  image: rawmind/rancher-zk:3.4.6-1
+  ports:
+  - "2181:2181"
+  volumes:
+  - /opt/zk/data:/opt/zk/data
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+  
+rabbit1:
+  ports:
+  - 15672:15672/tcp
+  - 5672:5672/tcp
+  labels:
     io.rancher.scheduler.affinity:host_label: services=rabbit
+  hostname: rabbit1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
+  
+rabbit2:
+  ports:
+  - 5673:5672/tcp
+  environment:
+    CLUSTERED: 'true'
+    CLUSTER_WITH: rabbit1
+  labels:
+    io.rancher.scheduler.affinity:host_label: services=rabbit
+  hostname: rabbit2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
+  links:
+  - rabbit1:rabbit1
 
 Redis:
   ports:
@@ -171,27 +212,14 @@ Redis:
 Sentinel:
   ports:
     - "26379:26379"
-  link: Redis 
+  links: 
+  - redis:redis 
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sentinel:3
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=redis
 
-Kafka:
-  ports:
-    - "9092:9092"
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/kafka:0.10.0.0-2
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
-    Kafka-9092, Zookeeper-2181
+  
 
-Zookeeper:
-  ports:
-    - "2181:2181"
-  link: Kafka
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/zk:3.4.8-4
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+
     
