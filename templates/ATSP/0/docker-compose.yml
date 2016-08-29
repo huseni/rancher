@@ -1,4 +1,4 @@
-EM:
+em:
   ports:
   - 1070:1070/tcp
   labels:
@@ -8,15 +8,21 @@ EM:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/em-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.144
-    REDIS_PORT: 6379
-    SENTINEL_IP: 10.6.51.144
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
+    core-db:  
+    core-db-port:
+    core-db-name: 
+  links:
+  - smh:smh
+  - ibus:ibus
+  - mts:mts
+  - ebus:ebus
+  - cache-db:cache-db
   command:
   - /root/em_start.sh
 
-A2:
+a2:
   ports:
   - 1050:8080/tcp
   labels:
@@ -25,8 +31,24 @@ A2:
   cpuset: 2,3
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/a2-new:latest
   mem_limit: 8589934592
+  environment:
+    REDIS_MASTER: cm_mymaster01
+    a2-db: a2-db.aertass.com  
+    a2-db-port: 1521
+    a2-db-name: ORCL
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  links:
+  - mdb:mdb
+  - ibus:ibus
+  - nm:nm
+  - mts:mts
+  - pa:pa
+  - cache-db:cache-db
+  - ebus:ebus
 
-C2:
+c2:
   ports:
   - 1060:1060/tcp
   labels:
@@ -36,14 +58,19 @@ C2:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/c2-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.144
-    REDIS_PORT: 6379
-    SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com 
+    core-db-port: 1521
+    core-db-name: ORCL
   command:
   - /root/c2_start.sh
+  links:
+  - smh:smh
+  - cache-db:cache-db
+  - ibus:ibus
+  - ebus:ebus
 
-NM:
+nm:
   ports:
   - 8081:8080/tcp
   labels:
@@ -53,19 +80,18 @@ NM:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nm-new:latest
   mem_limit: 8589934592
   environment:
-    mts.baseurl: http://10.6.51.230:8082/mts-api/oem/v1
-    mts.userdetails: /userDetails
-    mts.host: 10.6.51.230
-    mts.username: test
-    mts.password: test
-    mail.host: email-smtp.us-west-2.amazonaws.com
-    mail.port: 25
-    mail.username: AKIAJCTMSMITAE6GL6MQ
-    mail.password: AsRbwvmHi9axd5TMWsl3OozFVGDxTaYdBPaIpeLw/NQ4
-    mail.from: pankaj.bharambe@aeris.net
-    mail.displayName: Aeris Communication
+    nm-db: nm-db.aertass.com 
+    nm-db-port: 1521
+    nm-db-name: ORCL
+    nm_external_port: 8989
+  links:
+  - cat:cat
+  - mdb-fe:mdb-fe
+  - mts:mts
+  - ibus:ibus
+  - ebus:ebus
 
-SML:
+sml:
   ports:
   - 1090:1090/tcp
   labels:
@@ -79,10 +105,18 @@ SML:
     REDIS_PORT: 6379
     SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
   command:
   - /root/sml_start.sh
+  links:
+  - smh:smh
+  - ibus:ibus
+  - cache-db:cache-db
+  - ebus:ebus
 
-SMH:
+smh:
   ports:
   - 1010:1010/tcp
   labels:
@@ -92,14 +126,21 @@ SMH:
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/smh-new:latest
   mem_limit: 8589934592
   environment:
-    REDIS_HOST_IP: 10.6.51.144
-    REDIS_PORT: 6379
-    SENTINEL_PORT: 26379
     REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
   command:
     - /root/smh_start.sh
+  links:
+  - cache-db:cache-db
+  - em:em
+  - ibus:ibus
+  - mdb:mdb
+  - mts:mts
+  - ebus:ebus
 
-API-GW:
+pa:
   ports:
   - 1080:8080/tcp
   labels:
@@ -108,8 +149,22 @@ API-GW:
   cpuset: 4,5
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/api-gw-new:latest
   mem_limit: 8589934592
+  environment:
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  links:
+  - smh:smh
+  - cat:cat
+  - em:em
+  - mdb:mdb
+  - a2:a2
+  - mts:mts
+  - nm:nm
+  - ibus:ibus
+  - ebus:ebus
 
-MTS:
+mts:
   ports:
   - 8082:8080/tcp
   labels:
@@ -118,8 +173,17 @@ MTS:
   cpuset: 6,7,8
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mts-new
   mem_limit: 8589934592
+  environment:
+    mts-db: mts-db.aertass.com
+    mts-db-port: 1521
+    mts-db-name: ORCL
+  links:
+  - pa:pa
+  - mdb:mdb
+  - nm:nm
+  - ebus:ebus
 
-CAT:
+cat:
   ports:
   - 8083:8080/tcp
   labels:
@@ -128,8 +192,19 @@ CAT:
   cpuset: 3,4,5
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/cat-new
   mem_limit: 8589934592
+  environment:
+    cat-db: cat-db.aertass.com
+    cat-db-port: 1521
+    cat-db-name: ORCL
+  links:
+  - pa:pa
+  - nm:nm
+  - mts:mts
+  - notesdb:notesdb
+  - mdb-fe:mdb-fe
+  - ebus:ebus
 
-MDB:
+mdb:
   ports:
   - 8084:8080/tcp
   labels:
@@ -138,8 +213,19 @@ MDB:
   cpuset: 9,10,11
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mdb
   mem_limit: 8589934592
+  environment:
+    mdb-db: mdb-db.aertass.com
+    mdb-db-port: 1521
+    mdb-db-name: ORCL
+  links:
+  - pa:pa
+  - cat:cat
+  - mts:mts
+  - nm:nm
+  - ebus:ebus
+  - ibus:ibus
 
-NotesDB:
+notesdb:
   ports:
   - 8050:8080/tcp
   labels:
@@ -148,8 +234,19 @@ NotesDB:
   cpuset: 12,13,14
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/notesdb
   mem_limit: 8589934592
+  environment:
+    notes-db: notes-db.aertass.com
+    notes-db-port: 1521
+    notes-db-name: ORCL
+  links:
+  - pa:pa
+  - cat:cat
+  - mts:mts
+  - nm:nm
+  - ibus:ibus
+  - ebus:ebus 
 
-kafka:
+ibus:
   tty: true
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/kafka:0.10.0.0-2
   ports:
@@ -177,29 +274,29 @@ zk:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
   
-rabbit1:
+ebus:
   ports:
   - 15672:15672/tcp
   - 5672:5672/tcp
   labels:
     io.rancher.scheduler.affinity:host_label: services=rabbit
-  hostname: rabbit1
+  hostname: ebus
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
   
-rabbit2:
+ebus1:
   ports:
   - 5673:5672/tcp
   environment:
     CLUSTERED: 'true'
-    CLUSTER_WITH: rabbit1
+    CLUSTER_WITH: ebus
   labels:
     io.rancher.scheduler.affinity:host_label: services=rabbit
-  hostname: rabbit2
+  hostname: ebus1
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
   links:
-  - rabbit1:rabbit1
+  - ebus:ebus
 
-Redis:
+redis:
   ports:
     - "6379:6379"
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/redis:3
@@ -207,7 +304,7 @@ Redis:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=redis
     
-Sentinel:
+cache-db:
   ports:
     - "26379:26379"
   links: 
@@ -231,5 +328,3 @@ nginx-tcp1:
   labels:
     io.rancher.scheduler.affinity:host_label: services=nginx
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nginx:qa-pge-1
-
-    
