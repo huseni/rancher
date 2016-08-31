@@ -357,44 +357,7 @@ storm-supervisor:
   links:
   - storm-nimbus:storm-nimbus
   - mongo-cluster:mongo-cluster
-webapp1:
-  environment:
-    AERCLOUD_BASE_URL: https://api-aercloud-preprod.aeriscloud.com
-    AERMAILER_URL: http://aerportmailer.aeriscloud.com
-    HOST: hostname
-    KEYCLOAK_ADMIN_PASSWORD: Imaa-2016
-    KEYCLOAK_CONFIG_PATH: /config/keycloak.json
-    LOG_LEVEL: debug
-    PORT: '8080'
-    SSL: 'false'
-    WEB_FOLDER: dist
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-1
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aer-fleet-webapp:1.1.11
-  links:
-  - reports-ws:reports-ws
-  volumes:
-  - /opt/webapp/config:/config/
-webapp2:
-  environment:
-    AERCLOUD_BASE_URL: https://api-aercloud-preprod.aeriscloud.com
-    AERMAILER_URL: http://aerportmailer.aeriscloud.com
-    HOST: hostname
-    KEYCLOAK_ADMIN_PASSWORD: Imaa-2016
-    KEYCLOAK_CONFIG_PATH: /config/keycloak.json
-    LOG_LEVEL: debug
-    PORT: '8080'
-    SSL: 'false'
-    WEB_FOLDER: dist
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-2
-  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aer-fleet-webapp:1.1.11
-  links:
-  - reports-ws:reports-ws
-  volumes:
-  - /opt/webapp/config:/config/
+
 nginx-udp-1:
   ports:
   - 41234:41234/udp
