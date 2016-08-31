@@ -1,0 +1,646 @@
+em:
+  ports:
+  - 1070:1070/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 6,7
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/em-new:latest
+  mem_limit: 8589934592
+  environment:
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+    core-db:  
+    core-db-port:
+    core-db-name: 
+  links:
+  - smh:smh
+  - ibus:ibus
+  - mts:mts
+  - ebus:ebus
+  - cache-db:cache-db
+  command:
+  - /root/em_start.sh
+
+a2:
+  ports:
+  - 1050:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 2,3
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/a2-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_MASTER: cm_mymaster01
+    a2-db: a2-db.aertass.com  
+    a2-db-port: 1521
+    a2-db-name: ORCL
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  links:
+  - mdb:mdb
+  - ibus:ibus
+  - nm:nm
+  - mts:mts
+  - pa:pa
+  - cache-db:cache-db
+  - ebus:ebus
+
+c2:
+  ports:
+  - 1060:1060/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 8,9
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/c2-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com 
+    core-db-port: 1521
+    core-db-name: ORCL
+  command:
+  - /root/c2_start.sh
+  links:
+  - smh:smh
+  - cache-db:cache-db
+  - ibus:ibus
+  - ebus:ebus
+
+nm:
+  ports:
+  - 8081:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 14,15
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nm-new:latest
+  mem_limit: 8589934592
+  environment:
+    nm-db: nm-db.aertass.com 
+    nm-db-port: 1521
+    nm-db-name: ORCL
+    nm_external_port: 8989
+  links:
+  - cat:cat
+  - mdb-fe:mdb-fe
+  - mts:mts
+  - ibus:ibus
+  - ebus:ebus
+
+sml:
+  ports:
+  - 1090:1090/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 10,11
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sml-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_HOST_IP: 10.6.51.144
+    REDIS_PORT: 6379
+    SENTINEL_PORT: 26379
+    REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  command:
+  - /root/sml_start.sh
+  links:
+  - smh:smh
+  - ibus:ibus
+  - cache-db:cache-db
+  - ebus:ebus
+
+smh:
+  ports:
+  - 1010:1010/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 12,13
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/smh-new:latest
+  mem_limit: 8589934592
+  environment:
+    REDIS_MASTER: cm_mymaster01
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  command:
+    - /root/smh_start.sh
+  links:
+  - cache-db:cache-db
+  - em:em
+  - ibus:ibus
+  - mdb:mdb
+  - mts:mts
+  - ebus:ebus
+
+pa:
+  ports:
+  - 1080:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=core
+  cpuset: 4,5
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/api-gw-new:latest
+  mem_limit: 8589934592
+  environment:
+    core-db: core-db.aertass.com  
+    core-db-port: 1521
+    core-db-name: ORCL
+  links:
+  - smh:smh
+  - cat:cat
+  - em:em
+  - mdb:mdb
+  - a2:a2
+  - mts:mts
+  - nm:nm
+  - ibus:ibus
+  - ebus:ebus
+
+mts:
+  ports:
+  - 8082:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 6,7,8
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mts-new
+  mem_limit: 8589934592
+  environment:
+    mts-db: mts-db.aertass.com
+    mts-db-port: 1521
+    mts-db-name: ORCL
+  links:
+  - pa:pa
+  - mdb:mdb
+  - nm:nm
+  - ebus:ebus
+
+cat:
+  ports:
+  - 8083:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 3,4,5
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/cat-new
+  mem_limit: 8589934592
+  environment:
+    cat-db: cat-db.aertass.com
+    cat-db-port: 1521
+    cat-db-name: ORCL
+  links:
+  - pa:pa
+  - nm:nm
+  - mts:mts
+  - notesdb:notesdb
+  - mdb-fe:mdb-fe
+  - ebus:ebus
+
+mdb:
+  ports:
+  - 8084:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 9,10,11
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mdb
+  mem_limit: 8589934592
+  environment:
+    mdb-db: mdb-db.aertass.com
+    mdb-db-port: 1521
+    mdb-db-name: ORCL
+  links:
+  - pa:pa
+  - cat:cat
+  - mts:mts
+  - nm:nm
+  - ebus:ebus
+  - ibus:ibus
+
+notesdb:
+  ports:
+  - 8050:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=non-core
+  cpuset: 12,13,14
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/notesdb
+  mem_limit: 8589934592
+  environment:
+    notes-db: notes-db.aertass.com
+    notes-db-port: 1521
+    notes-db-name: ORCL
+  links:
+  - pa:pa
+  - cat:cat
+  - mts:mts
+  - nm:nm
+  - ibus:ibus
+  - ebus:ebus 
+
+ibus:
+  tty: true
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/kafka:0.10.0.0-2
+  ports:
+  - "9092:9092"
+  volumes:
+  - /opt/kafka/data:/opt/kafka/data
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+  environment:
+    - ZK_SERVICE=zk
+    - KAFKA_LOG_DIRS=/var/logs/kafkalogs
+    - ADVERTISE_PUB_IP=10.6.51.40  
+  links:
+  - zk:zk
+
+zk:
+  tty: true
+  image: rawmind/rancher-zk:3.4.6-1
+  ports:
+  - "2181:2181"
+  volumes:
+  - /opt/zk/data:/opt/zk/data
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=kafka_zookeeper
+  
+ebus:
+  ports:
+  - 15672:15672/tcp
+  - 5672:5672/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: services=rabbit
+  hostname: ebus
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
+  
+ebus1:
+  ports:
+  - 5673:5672/tcp
+  environment:
+    CLUSTERED: 'true'
+    CLUSTER_WITH: ebus
+  labels:
+    io.rancher.scheduler.affinity:host_label: services=rabbit
+  hostname: ebus1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/rabbitmq
+  links:
+  - ebus:ebus
+
+redis:
+  ports:
+    - "6379:6379"
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/redis:3
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=redis
+    
+cache-db:
+  ports:
+    - "26379:26379"
+  links: 
+  - redis:redis 
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sentinel:3
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: services=redis
+
+nginx-tcp1:
+  ports:
+  - 1012:1012/tcp
+  - 1013:1013/tcp
+  - 1014:1014/tcp
+  - 1015:1015/tcp
+  - 1883:1883/tcp
+  - 80:80/tcp
+  - 8083:8083/tcp
+  - 8989:8989/tcp
+  - 9443:9443/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: services=nginx
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nginx:qa-pge-1
+  
+afTwo:
+  environment:
+    FO_ACCOUNT_ID: '17042'
+    FO_API_KEY: f36dd7e4-220d-11e6-8636-fb5489328753
+    LOG_LEVEL: info
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aercloud-fleet-adapter
+  links:
+  - aercloud-ws:aercloud-ws
+storm-supervisor:
+  ports:
+  - 8000:8000/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  command:
+  - storm
+  - supervisor
+  - -c
+  - storm.zookeeper.servers=["storm-zookeeper"]
+  - -c
+  - nimbus.host=nimbus
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/storm:1.0.1-alpine
+  links:
+  - storm-nimbus:storm-nimbus
+  - mongo-cluster:mongo-cluster
+webapp1:
+  environment:
+    AERCLOUD_BASE_URL: https://api-aercloud-preprod.aeriscloud.com
+    AERMAILER_URL: http://aerportmailer.aeriscloud.com
+    HOST: hostname
+    KEYCLOAK_ADMIN_PASSWORD: Imaa-2016
+    KEYCLOAK_CONFIG_PATH: /config/keycloak.json
+    LOG_LEVEL: debug
+    PORT: '8080'
+    SSL: 'false'
+    WEB_FOLDER: dist
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aer-fleet-webapp:1.1.11
+  links:
+  - reports-ws:reports-ws
+  volumes:
+  - /opt/webapp/config:/config/
+webapp2:
+  environment:
+    AERCLOUD_BASE_URL: https://api-aercloud-preprod.aeriscloud.com
+    AERMAILER_URL: http://aerportmailer.aeriscloud.com
+    HOST: hostname
+    KEYCLOAK_ADMIN_PASSWORD: Imaa-2016
+    KEYCLOAK_CONFIG_PATH: /config/keycloak.json
+    LOG_LEVEL: debug
+    PORT: '8080'
+    SSL: 'false'
+    WEB_FOLDER: dist
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aer-fleet-webapp:1.1.11
+  links:
+  - reports-ws:reports-ws
+  volumes:
+  - /opt/webapp/config:/config/
+nginx-udp-1:
+  ports:
+  - 41234:41234/udp
+  labels:
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-LB1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/nginx-udp:1.0
+  links:
+  - afOne:afOne
+  - afTwo:afTwo
+nginx-udp-2:
+  ports:
+  - 41234:41234/udp
+  labels:
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-LB2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/nginx-udp:1.0
+  links:
+  - afOne:afOne
+  - afTwo:afTwo
+kafka:
+  ports:
+  - 9092:9092/tcp
+  environment:
+    CONFD_INTERVAL: '60'
+    JVMFLAGS: -Xmx1024m -Xms1024m
+    ZK_SERVICE: zookeeper/zk
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: rawmind/rancher-kafka:0.9.0
+  links:
+  - kafka-zookeeper:kafka-zookeeper
+  - storm-supervisor:storm-supervisor
+kafka-zookeeper:
+  ports:
+  - 2181:2181/tcp
+  environment:
+    CONFD_INTERVAL: '60'
+    JVMFLAGS: -Xmx512m -Xms512m
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: rawmind/rancher-zk:3.4.6-1
+cass4:
+  environment:
+    CASS_NAME: aertrak_cass4_1
+    CASS_SEED: aertrak_cass1_1
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/cassandra1.2.14:1.0.1
+  links:
+  - cass1:cass1
+storm-zookeeper:
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/zookeeper:3.4.8-alpine
+cass3:
+  environment:
+    CASS_NAME: aertrak_cass3_1
+    CASS_SEED: aertrak_cass1_1
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/cassandra1.2.14:1.0.1
+  links:
+  - cass1:cass1
+redis:
+  ports:
+  - 6379:6379/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/redis:3.2.0-alpine
+cass2:
+  environment:
+    CASS_NAME: aertrak_cass2_1
+    CASS_SEED: aertrak_cass1_1
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/cassandra1.2.14:1.0.1
+  links:
+  - cass1:cass1
+cass1:
+  ports:
+  - 9042:9042/tcp
+  - 9160:9160/tcp
+  environment:
+    CASS_NAME: aertrak_cass1_1
+    CASS_SEED: aertrak_cass1_1
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: project=aca
+  hostname: cass1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/cassandra1.2.14:1.0.1
+rabbit1:
+  ports:
+  - 15672:15672/tcp
+  - 5672:5672/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  hostname: rabbit1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/docker/rabbitmqcluster
+storm-ui:
+  ports:
+  - 8080:8080/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  command:
+  - storm
+  - ui
+  - -c
+  - storm.zookeeper.servers=["storm-zookeeper"]
+  - -c
+  - nimbus.host=nimbus
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/storm:1.0.1-alpine
+  links:
+  - storm-supervisor:storm-supervisor
+aercloud-ws:
+  ports:
+  - 8083:8080/tcp
+  environment:
+    CASS_HOST: cass1,cass2,cass3,cass4
+    CLUSTER_NAME: Test_Cluster
+    RABBIT_HOST: rabbit1:5672,rabbit2:5672
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aercloud/webservice:1.2
+  links:
+  - rabbit1:rabbit1
+  - kafka-zookeeper:kafka-zookeeper
+  - cass3:cass3
+  - cass4:cass4
+  - cass2:cass2
+  - kafka:kafka
+  - rabbit2:rabbit2
+  - cass1:cass1
+  stdin_open: true
+mongo-base:
+  labels:
+    io.rancher.container.start_once: 'true'
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  tty: true
+  entrypoint:
+  - /bin/true
+  image: rancher/mongodb-conf:v0.1.0
+  stdin_open: true
+  net: none
+rabbit2:
+  ports:
+  - 5673:5672/tcp
+  environment:
+    CLUSTERED: 'true'
+    CLUSTER_WITH: rabbit1
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+  hostname: rabbit2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/docker/rabbitmqcluster
+  links:
+  - rabbit1:rabbit1
+storm-nimbus:
+  ports:
+  - 6627:6627/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  command:
+  - storm
+  - nimbus
+  - -c
+  - storm.zookeeper.servers=["storm-zookeeper"]
+  - -c
+  - nimbus.host=nimbus
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/storm:1.0.1-alpine
+  links:
+  - storm-zookeeper:storm-zookeeper
+mongo-datavolume:
+  labels:
+    io.rancher.container.start_once: 'true'
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  entrypoint:
+  - /bin/true
+  image: busybox
+  volumes:
+  - /data/db
+  net: none
+nginx-tcp-1:
+  ports:
+  - 443:8443/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-LB1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/nginx-tcp:1.0
+  links:
+  - webapp2:webapp2
+  - webapp1:webapp1
+nginx-tcp-2:
+  ports:
+  - 443:8443/tcp
+  labels:
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-LB2
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/nginx-tcp:1.0
+  links:
+  - webapp2:webapp2
+  - webapp1:webapp1
+afOne:
+  environment:
+    FO_ACCOUNT_ID: '17042'
+    FO_API_KEY: f36dd7e4-220d-11e6-8636-fb5489328753
+    LOG_LEVEL: info
+  labels:
+    io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: name=Demo-Aertrak-1
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aercloud-fleet-adapter
+  links:
+  - aercloud-ws:aercloud-ws
+mongo-cluster:
+  ports:
+  - 27017:27017/tcp
+  environment:
+    MONGO_SERVICE_NAME: mongo-cluster
+  labels:
+    io.rancher.sidekicks: mongo-base,mongo-datavolume
+    io.rancher.scheduler.affinity:host_label: project=aca
+    io.rancher.container.hostname_override: container_name
+  tty: true
+  entrypoint:
+  - /opt/rancher/bin/entrypoint.sh
+  command:
+  - --replSet
+  - rs0
+  image: mongo:3.2
+  volumes_from:
+  - mongo-base
+  - mongo-datavolume
+reports-ws:
+  ports:
+  - 8082:8082/tcp
+  environment:
+    MONGODBHOST: qa-aca-mongo-1.aeriscloud.com
+    REDISDBHOST: qa-aca-redis-1.aeriscloud.com
+  labels:
+    io.rancher.scheduler.affinity:host_label: name=demo-aca-1
+  tty: true
+  image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/aertrak/aeris-fleet-reports-ws
+  links:
+  - mongo-cluster:mongo-cluster
+  - redis:redis
+  stdin_open: true
