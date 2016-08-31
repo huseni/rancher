@@ -1,0 +1,95 @@
+.catalog:
+  name: "ATSP-AerTrek"
+  version: "demo-atsp-AerTrek"
+  description: "ATSP-AerTrek. You know, for search"
+  questions:
+    - variable: cluster_name
+      description: "Unique name to assign to your ATSP cluster."
+      label: "Cluster Name"
+      type: "string"
+      required: true
+      default: "atsp"
+NM:
+  scale: 1
+SML:
+  scale: 1
+SMH:
+  scale: 1
+EM:
+  scale: 1
+C2:
+  scale: 1
+A2:
+  scale: 1
+API-GW:
+  scale: 1
+MTS:
+  scale: 1
+MDB:
+  scale: 1
+NotesDB:
+  scale: 1
+CAT:
+  scale: 1
+RabbitMQ-MQTT:
+  scale: 1
+Kafka:
+  scale: 1
+Zookeeper:
+  scale: 1
+Redis:
+  scale: 1
+Sentinel:
+  scale: 1
+afTwo:
+  scale: 1
+storm-supervisor:
+  scale: 1
+webapp1:
+  scale: 1
+webapp2:
+  scale: 1
+nginx-udp-1:
+  scale: 1
+nginx-udp-2:
+  scale: 1
+kafka:
+  scale: 1
+kafka-zookeeper:
+  scale: 1
+cass4:
+  scale: 1
+storm-zookeeper:
+  scale: 1
+cass3:
+  scale: 1
+redis:
+  scale: 1
+cass2:
+  scale: 1
+cass1:
+  scale: 1
+rabbit1:
+  scale: 1
+storm-ui:
+  scale: 1
+aercloud-ws:
+  scale: 1
+mongo-base:
+  scale: 1
+rabbit2:
+  scale: 1
+storm-nimbus:
+  scale: 1
+mongo-datavolume:
+  scale: 1
+nginx-tcp-1:
+  scale: 1
+nginx-tcp-2:
+  scale: 1
+afOne:
+  scale: 1
+mongo-cluster:
+  scale: 1
+reports-ws:
+  scale: 1
