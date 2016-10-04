@@ -314,6 +314,14 @@ nginx-tcp1:
   - 8083:8083/tcp
   - 8989:8989/tcp
   - 9443:9443/tcp
+  links:
+  - mdb:mdb
+  - cat:cat
+  - nm:nm
+  - mts:mts
+  - pa:pa
+  - cache-db:cache-db
+  - ebus:ebus
   labels:
     io.rancher.scheduler.affinity:host_label: services=nginx
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nginx:qa-pge-1
