@@ -4,7 +4,6 @@ em:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 6,7
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/em-new:latest
   mem_limit: 8589934592
   environment:
@@ -28,7 +27,6 @@ a2:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 2,3
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/a2-new:latest
   mem_limit: 8589934592
   environment:
@@ -54,7 +52,6 @@ c2:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 8,9
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/c2-new:latest
   mem_limit: 8589934592
   environment:
@@ -76,7 +73,6 @@ nm:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 14,15
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/nm-new:latest
   mem_limit: 8589934592
   environment:
@@ -97,7 +93,6 @@ sml:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 10,11
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/sml-new:latest
   mem_limit: 8589934592
   environment:
@@ -122,7 +117,6 @@ smh:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 12,13
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/smh-new:latest
   mem_limit: 8589934592
   environment:
@@ -146,7 +140,6 @@ pa:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=core
-  cpuset: 4,5
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/api-gw-new:latest
   mem_limit: 8589934592
   environment:
@@ -170,7 +163,6 @@ mts:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=non-core
-  cpuset: 6,7,8
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mts-new
   mem_limit: 8589934592
   environment:
@@ -189,7 +181,6 @@ cat:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=non-core
-  cpuset: 3,4,5
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/cat-new
   mem_limit: 8589934592
   environment:
@@ -210,7 +201,6 @@ mdb:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=non-core
-  cpuset: 9,10,11
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/mdb
   mem_limit: 8589934592
   environment:
@@ -231,7 +221,6 @@ notesdb:
   labels:
     io.rancher.container.pull_image: always
     io.rancher.scheduler.affinity:host_label: services=non-core
-  cpuset: 12,13,14
   image: 035824440926.dkr.ecr.us-east-1.amazonaws.com/atsp/notesdb
   mem_limit: 8589934592
   environment:
