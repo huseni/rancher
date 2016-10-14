@@ -13,9 +13,7 @@ em:
     core-db-port:
     core-db-name: 
   links:
-  - smh:smh
   - ibus:ibus
-  - mts:mts
   - ebus:ebus
   - cache-db:cache-db
   command:
@@ -38,13 +36,9 @@ a2:
     core-db-port: 1521
     core-db-name: ORCL
   links:
-  - mdb:mdb
   - ibus:ibus
-  - nm:nm
-  - mts:mts
   - pa:pa
   - cache-db:cache-db
-  - ebus:ebus
 
 c2:
   ports:
@@ -62,8 +56,8 @@ c2:
   command:
   - /root/c2_start.sh
   links:
-  - smh:smh
   - cache-db:cache-db
+  - pa:pa
   - ibus:ibus
   - ebus:ebus
 
@@ -81,9 +75,7 @@ nm:
     nm-db-name: ORCL
     nm_external_port: 8989
   links:
-  - cat:cat
-  - mdb-fe:mdb-fe
-  - mts:mts
+  - pa:pa
   - ibus:ibus
   - ebus:ebus
 
@@ -106,7 +98,6 @@ sml:
   command:
   - /root/sml_start.sh
   links:
-  - smh:smh
   - ibus:ibus
   - cache-db:cache-db
   - ebus:ebus
@@ -128,10 +119,7 @@ smh:
     - /root/smh_start.sh
   links:
   - cache-db:cache-db
-  - em:em
   - ibus:ibus
-  - mdb:mdb
-  - mts:mts
   - ebus:ebus
 
 pa:
@@ -147,15 +135,7 @@ pa:
     core-db-port: 1521
     core-db-name: ORCL
   links:
-  - smh:smh
-  - cat:cat
-  - em:em
-  - mdb:mdb
-  - a2:a2
-  - mts:mts
-  - nm:nm
   - ibus:ibus
-  - ebus:ebus
 
 mts:
   ports:
@@ -171,9 +151,6 @@ mts:
     mts-db-name: ORCL
   links:
   - pa:pa
-  - mdb:mdb
-  - nm:nm
-  - ebus:ebus
 
 cat:
   ports:
@@ -189,11 +166,6 @@ cat:
     cat-db-name: ORCL
   links:
   - pa:pa
-  - nm:nm
-  - mts:mts
-  - notesdb:notesdb
-  - mdb-fe:mdb-fe
-  - ebus:ebus
 
 mdb:
   ports:
@@ -209,11 +181,6 @@ mdb:
     mdb-db-name: ORCL
   links:
   - pa:pa
-  - cat:cat
-  - mts:mts
-  - nm:nm
-  - ebus:ebus
-  - ibus:ibus
 
 notesdb:
   ports:
@@ -228,12 +195,7 @@ notesdb:
     notes-db-port: 1521
     notes-db-name: ORCL
   links:
-  - pa:pa
-  - cat:cat
-  - mts:mts
-  - nm:nm
   - ibus:ibus
-  - ebus:ebus 
 
 ibus:
   tty: true
@@ -320,7 +282,6 @@ nginx-tcp1:
   - nm:nm
   - mts:mts
   - pa:pa
-  - cache-db:cache-db
   - ebus:ebus
   labels:
     io.rancher.scheduler.affinity:host_label: services=nginx
